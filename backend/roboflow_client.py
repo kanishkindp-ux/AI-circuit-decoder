@@ -46,8 +46,8 @@ def _load_api_key() -> str:
 ROBOFLOW_API_KEY = _load_api_key()
 
 WORKFLOW_URL = (
-    "https://serverless.roboflow.com"
-    "/kanishk-sharma-4yrkt/workflows/circuitlens-hgrfp"
+    f"https://detect.roboflow.com/circuitlens-hgrfp/2"
+    f"?api_key={ROBOFLOW_API_KEY}"
 )
 
 DEFAULT_CONFIDENCE = 0.4
@@ -98,7 +98,7 @@ class RoboflowService:
     # Workflows REST call
     # ------------------------------------------------------------------
     def query_roboflow_image(self, image_base64: str) -> list[dict]:
-        """Send a base64 image to the Roboflow Workflows endpoint.
+        """Send a base64 image to the Roboflow Standard Inference endpoint.
 
         Args:
             image_base64: Base64-encoded image string.
@@ -112,20 +112,14 @@ class RoboflowService:
         if "," in image_base64 and image_base64.index(",") < 100:
             image_base64 = image_base64.split(",", 1)[1]
 
-        payload = json.dumps({
-            "inputs": {
-                "image": {"type": "base64", "value": image_base64},
-                "confidence": DEFAULT_CONFIDENCE,
-                "iou_threshold": DEFAULT_IOU_THRESHOLD,
-            }
-        }).encode("utf-8")
+        # The standard API expects raw base64 encoded bytes in the body
+        payload = image_base64.encode("ascii")
 
         req = urllib.request.Request(
             self.url,
             data=payload,
             headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/x-www-form-urlencoded",
             },
             method="POST",
         )
@@ -137,7 +131,13 @@ class RoboflowService:
             return self._parse_workflow_response(raw)
 
         except Exception as exc:
-            logger.error(f"Roboflow Workflows request failed: {type(exc).__name__}: {exc}")
+            err_body = ""
+            if hasattr(exc, "read"):
+                try:
+                    err_body = f" - Body: {exc.read().decode()}"
+                except Exception:
+                    pass
+            logger.error(f"Roboflow Inference request failed: {type(exc).__name__}: {exc}{err_body}")
             return []
 
     # ------------------------------------------------------------------

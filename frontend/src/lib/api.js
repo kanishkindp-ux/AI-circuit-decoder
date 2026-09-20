@@ -1,6 +1,7 @@
 import imageCompression from 'browser-image-compression';
 
-const API_BASE = 'http://localhost:8000';
+// Dynamically route to backend using the current hostname
+const API_BASE = `http://${window.location.hostname}:8000`;
 
 /**
  * Compress an image File before upload.

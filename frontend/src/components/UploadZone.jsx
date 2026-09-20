@@ -67,8 +67,8 @@ export default function UploadZone({ variant = 'circuit', files, onFilesChange, 
     <div className="space-y-3">
       {/* Label */}
       <div className="flex items-center gap-2">
-        <Icon className="w-4 h-4 text-indigo-600" />
-        <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+        <Icon className="w-4 h-4 text-indigo-400" />
+        <span className="text-sm font-semibold text-slate-200 tracking-wide uppercase">
           {label}
         </span>
         {multiple && (
@@ -96,8 +96,8 @@ export default function UploadZone({ variant = 'circuit', files, onFilesChange, 
           min-h-[180px] px-6 py-8
           ${
             isDragOver
-              ? 'dropzone-active border-indigo-500 bg-indigo-50/60'
-              : 'border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50/80'
+              ? 'dropzone-active border-indigo-400 bg-indigo-500/10'
+              : 'border-white/20 bg-black/20 hover:border-indigo-400/50 hover:bg-black/30'
           }
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
         `}
@@ -106,16 +106,16 @@ export default function UploadZone({ variant = 'circuit', files, onFilesChange, 
           className={`
             w-12 h-12 rounded-full flex items-center justify-center
             transition-colors duration-300
-            ${isDragOver ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400'}
+            ${isDragOver ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-400'}
           `}
         >
           <Icon className="w-5 h-5" />
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium text-slate-600">
+          <p className="text-sm font-medium text-slate-300">
             {sublabel}
           </p>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             JPG, PNG, or WebP · Max 10 MB
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function UploadZone({ variant = 'circuit', files, onFilesChange, 
           {files.map((file, idx) => (
             <div
               key={`${file.name}-${idx}`}
-              className="group relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200 shadow-sm"
+              className="group relative w-20 h-20 rounded-lg overflow-hidden border border-white/20 shadow-sm"
             >
               <img
                 src={URL.createObjectURL(file)}

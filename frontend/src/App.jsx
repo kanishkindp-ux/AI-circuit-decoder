@@ -1,12 +1,15 @@
 import { useState, useCallback, useRef } from 'react';
-import { Zap, Loader2, AlertTriangle, RotateCcw, Sparkles } from 'lucide-react';
+import { Zap, Loader2, AlertTriangle, RotateCcw, Sparkles, CheckCircle } from 'lucide-react';
 import UploadZone from './components/UploadZone.jsx';
 import ComponentBanner from './components/ComponentBanner.jsx';
-import SvgOverlay from './components/SvgOverlay.jsx';
+import WokwiViewer from './components/WokwiViewer.jsx';
 import LabReport from './components/LabReport.jsx';
+import LandingPage from './components/LandingPage.jsx';
 import { runFullPipeline } from './lib/api.js';
 
 export default function App() {
+  const [started, setStarted] = useState(false);
+
   // ── Upload state ──
   const [circuitFiles, setCircuitFiles] = useState([]);
   const [manualFiles, setManualFiles] = useState([]);
@@ -141,20 +144,28 @@ export default function App() {
 
   const canAnalyze = circuitFiles.length > 0 && !loading;
 
+  if (!started) {
+    return <LandingPage onStart={() => setStarted(true)} />;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-900 text-slate-50 relative font-sans">
+      {/* Background ambient blobs */}
+      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-violet-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+      <header className="sticky top-0 z-50 bg-slate-900/60 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-200">
               <Zap className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 leading-tight tracking-tight">
+              <h1 className="text-lg font-bold text-white leading-tight tracking-tight">
                 CircuitLens
               </h1>
-              <p className="text-[11px] text-slate-400 leading-none -mt-0.5">
+              <p className="text-[11px] text-indigo-200 leading-none -mt-0.5">
                 AI-Powered Circuit Diagnostics
               </p>
             </div>
@@ -166,9 +177,9 @@ export default function App() {
                 onClick={handleReset}
                 className="
                   inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                  text-sm font-medium text-slate-600
-                  border border-slate-200 bg-white
-                  hover:bg-slate-50 hover:border-slate-300
+                  text-sm font-medium text-slate-300
+                  border border-white/10 bg-white/5
+                  hover:bg-white/10 hover:text-white hover:border-white/20
                   transition-all duration-200 no-print
                 "
               >
@@ -176,10 +187,6 @@ export default function App() {
                 New Analysis
               </button>
             )}
-            <div className="h-5 w-px bg-slate-200 mx-1 no-print" />
-            <span className="text-xs text-slate-400 no-print font-mono">
-              Gemini 2.5 Flash
-            </span>
           </div>
         </div>
       </header>
@@ -188,10 +195,10 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Error banner */}
         {error && (
-          <div className="mb-6 flex items-start gap-3 bg-rose-50 border border-rose-200 rounded-xl px-5 py-4 animate-fade-in-up">
-            <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start gap-3 bg-rose-500/10 border border-rose-500/20 rounded-xl px-5 py-4 animate-fade-in-up backdrop-blur-md">
+            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-rose-800">
+              <p className="text-sm font-medium text-rose-200">
                 Analysis Error
               </p>
               <p className="text-sm text-rose-600 mt-0.5">{error}</p>
@@ -208,7 +215,7 @@ export default function App() {
 
         {/* Component Banner (shown after analysis) */}
         {(hasAnalyzed || loading) && (
-          <div className="mb-6 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="mb-6 bg-white/5 border border-white/10 rounded-xl p-5 shadow-xl shadow-black/20 backdrop-blur-sm relative z-10">
             <ComponentBanner
               components={components}
               onComponentsChange={handleComponentsChange}
@@ -218,10 +225,10 @@ export default function App() {
         )}
 
         {/* Two-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
           {/* Left — Upload Zones */}
           <div className="space-y-5">
-            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-xl shadow-black/20 backdrop-blur-sm">
               <UploadZone
                 variant="circuit"
                 files={circuitFiles}
@@ -230,7 +237,7 @@ export default function App() {
               />
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-xl shadow-black/20 backdrop-blur-sm">
               <UploadZone
                 variant="manual"
                 files={manualFiles}
@@ -246,15 +253,18 @@ export default function App() {
               className={`
                 w-full py-3.5 rounded-xl font-semibold text-sm
                 flex items-center justify-center gap-2
-                transition-all duration-300 shadow-sm
-                no-print
+                transition-all duration-300 shadow-lg
+                no-print relative overflow-hidden group
                 ${
                   canAnalyze
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md hover:shadow-indigo-200 active:scale-[0.98]'
-                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    ? 'bg-indigo-500 text-white hover:bg-indigo-400 hover:scale-[1.02] hover:shadow-indigo-500/25'
+                    : 'bg-white/5 text-slate-500 border border-white/10 cursor-not-allowed'
                 }
               `}
             >
+              {canAnalyze && (
+                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-x-[-100%] group-hover:translate-x-[100%]" />
+              )}
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -269,38 +279,34 @@ export default function App() {
             </button>
           </div>
 
-          {/* Right — Analysis results */}
-          <div className="space-y-5">
-            {/* SVG Breadboard */}
-            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-              <SvgOverlay netlist={netlist} loading={loading && !hasAnalyzed} />
+          {/* Right — Output / Viewers */}
+          <div className="space-y-6">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-xl shadow-black/20 backdrop-blur-sm">
+              <WokwiViewer project={analysis} loading={loading && !hasAnalyzed} />
             </div>
 
             {/* Analysis Summary Card (quick-look from Gemini) */}
-            {analysis && (
-              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm animate-fade-in-up">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+            {hasAnalyzed && analysis && (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-xl shadow-black/20 animate-fade-in-up backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <h3 className="font-semibold text-white tracking-wide uppercase text-sm">
                     Quick Summary
                   </h3>
                   {analysis.confidence != null && (
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                      analysis.confidence >= 0.8 ? 'bg-emerald-50 text-emerald-700'
-                      : analysis.confidence >= 0.5 ? 'bg-amber-50 text-amber-700'
-                      : 'bg-rose-50 text-rose-700'
-                    }`}>
+                    <span className="ml-auto text-xs font-medium bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
                       {Math.round(analysis.confidence * 100)}% confidence
                     </span>
                   )}
                 </div>
-
+                
                 {analysis.circuit_type && (
-                  <p className="text-sm text-indigo-600 font-medium mb-2">
+                  <p className="text-sm font-medium text-indigo-300 mb-2">
                     {analysis.circuit_type}
                   </p>
                 )}
                 {analysis.summary && (
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-300 leading-relaxed">
                     {analysis.summary}
                   </p>
                 )}
@@ -308,17 +314,17 @@ export default function App() {
                 {/* Error/hazard counts */}
                 <div className="flex gap-3 mt-3">
                   {analysis.errors?.length > 0 && (
-                    <span className="text-xs bg-rose-50 text-rose-700 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-rose-500/10 text-rose-400 px-2 py-1 rounded-full font-medium border border-rose-500/20">
                       {analysis.errors.length} error{analysis.errors.length !== 1 ? 's' : ''}
                     </span>
                   )}
                   {analysis.safety_hazards?.length > 0 && (
-                    <span className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 rounded-full font-medium border border-amber-500/20">
                       {analysis.safety_hazards.length} hazard{analysis.safety_hazards.length !== 1 ? 's' : ''}
                     </span>
                   )}
                   {(!analysis.errors?.length && !analysis.safety_hazards?.length) && (
-                    <span className="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-full font-medium border border-emerald-500/20">
                       No issues detected
                     </span>
                   )}
@@ -330,15 +336,17 @@ export default function App() {
 
         {/* Bottom — Lab Report */}
         {(reportMd || (loading && !hasAnalyzed)) && (
-          <div className="mb-8">
-            <LabReport markdown={reportMd} loading={loading && !hasAnalyzed} />
+          <div className="mb-8 relative z-10">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-xl shadow-black/20 backdrop-blur-sm">
+              <LabReport markdown={reportMd} loading={loading && !hasAnalyzed} />
+            </div>
           </div>
         )}
 
         {/* Footer */}
-        <footer className="text-center py-6 border-t border-slate-100 no-print">
-          <p className="text-xs text-slate-400">
-            Built with Gemini 2.5 Flash &amp; AWS · AWS Hackathon 2026 · CircuitLens v1.0
+        <footer className="text-center py-6 border-t border-white/10 no-print relative z-10">
+          <p className="text-xs text-slate-500">
+            Built with AI &amp; AWS · AWS Hackathon 2026 · CircuitLens v1.0
           </p>
         </footer>
       </main>
@@ -347,7 +355,7 @@ export default function App() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helper: Build a Markdown lab report from the Gemini structured analysis JSON
+// Helper: Build a Markdown lab report from the structured analysis JSON
 // ─────────────────────────────────────────────────────────────────────────────
 
 function buildReportMarkdown(analysis) {

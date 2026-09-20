@@ -17,8 +17,8 @@ export default function ComponentBanner({ components, onComponentsChange, loadin
     return (
       <div className="animate-fade-in-up">
         <div className="flex items-center gap-2 mb-3">
-          <Cpu className="w-4 h-4 text-indigo-600" />
-          <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+          <Cpu className="w-4 h-4 text-indigo-400" />
+          <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
             Detected Components
           </span>
         </div>
@@ -38,11 +38,11 @@ export default function ComponentBanner({ components, onComponentsChange, loadin
   return (
     <div className="animate-fade-in-up">
       <div className="flex items-center gap-2 mb-3">
-        <Cpu className="w-4 h-4 text-indigo-600" />
-        <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+        <Cpu className="w-4 h-4 text-indigo-400" />
+        <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
           Detected Components
         </span>
-        <span className="text-xs text-slate-400 font-normal normal-case ml-1">
+        <span className="text-xs text-slate-500 font-normal normal-case ml-1">
           Click to edit, press Enter to re-evaluate
         </span>
       </div>
@@ -93,7 +93,7 @@ function EditableChip({ value, onSave, onRemove }) {
 
   if (editing) {
     return (
-      <div className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-300 rounded-full px-3 py-1.5 shadow-sm">
+      <div className="inline-flex items-center gap-1 bg-indigo-500/20 border border-indigo-400/30 rounded-full px-3 py-1.5 shadow-sm">
         <input
           ref={inputRef}
           type="text"
@@ -107,7 +107,7 @@ function EditableChip({ value, onSave, onRemove }) {
             }
           }}
           onBlur={commit}
-          className="bg-transparent text-sm font-medium text-indigo-800 outline-none w-auto min-w-[60px]"
+          className="bg-transparent text-sm font-medium text-indigo-200 outline-none w-auto min-w-[60px]"
           style={{ width: `${Math.max(draft.length, 6)}ch` }}
           autoFocus
         />
@@ -124,23 +124,23 @@ function EditableChip({ value, onSave, onRemove }) {
   }
 
   return (
-    <div className="group inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 shadow-sm hover:border-indigo-300 hover:shadow transition-all cursor-pointer">
+    <div className="group inline-flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 shadow-sm hover:border-indigo-400/50 hover:bg-white/10 transition-all cursor-pointer">
       <span
         onClick={startEditing}
-        className="text-sm font-medium text-slate-700 group-hover:text-indigo-700 transition-colors"
+        className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors"
       >
         {value}
       </span>
       <Pencil
         onClick={startEditing}
-        className="w-3 h-3 text-slate-300 group-hover:text-indigo-500 transition-colors"
+        className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 transition-colors"
       />
       <button
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
         }}
-        className="w-4 h-4 rounded-full flex items-center justify-center text-slate-300 hover:bg-rose-100 hover:text-rose-500 transition-all"
+        className="w-4 h-4 rounded-full flex items-center justify-center text-slate-500 hover:bg-rose-500/20 hover:text-rose-400 transition-all"
         aria-label={`Remove ${value}`}
       >
         <X className="w-3 h-3" />

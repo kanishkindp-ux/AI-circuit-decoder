@@ -40,12 +40,7 @@ app = FastAPI(
 # CORS — allow the Vite dev server and common local origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",   # Vite default
-        "http://localhost:3000",   # Common alt
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -200,8 +195,18 @@ async def analyze_circuit(req: AnalyzeRequest):
 
         # 5. Try to parse the AI response as JSON
         try:
-            analysis_json = json.loads(analysis_text)
-        except json.JSONDecodeError:
+            clean_text = analysis_text.strip()
+            if clean_text.startswith("```json"):
+                clean_text = clean_text[7:]
+            elif clean_text.startswith("```"):
+                clean_text = clean_text[3:]
+            if clean_text.endswith("```"):
+                clean_text = clean_text[:-3]
+            clean_text = clean_text.strip()
+            
+            analysis_json = json.loads(clean_text)
+        except json.JSONDecodeError as jde:
+            logger.error(f"JSON Parse Error: {jde} - Raw: {analysis_text}")
             # If Gemini didn't return clean JSON, wrap it
             analysis_json = {"raw_response": analysis_text}
 

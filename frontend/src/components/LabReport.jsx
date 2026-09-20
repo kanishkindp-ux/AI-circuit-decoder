@@ -79,8 +79,8 @@ export default function LabReport({ markdown, loading }) {
       {/* Header with export buttons */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-indigo-600" />
-          <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+          <FileText className="w-4 h-4 text-indigo-400" />
+          <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
             Generated Lab Report
           </span>
         </div>
@@ -90,9 +90,9 @@ export default function LabReport({ markdown, loading }) {
             onClick={handlePrint}
             className="
               inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-              text-sm font-medium text-slate-600
-              border border-slate-200 bg-white
-              hover:bg-slate-50 hover:border-slate-300
+              text-sm font-medium text-slate-300
+              border border-white/10 bg-white/5
+              hover:bg-white/10 hover:border-white/20
               transition-all duration-200
               shadow-sm
             "
@@ -105,7 +105,7 @@ export default function LabReport({ markdown, loading }) {
             className="
               inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg
               text-sm font-medium text-white
-              bg-indigo-600 hover:bg-indigo-700
+              bg-indigo-500 hover:bg-indigo-400
               transition-all duration-200
               shadow-sm hover:shadow
             "
@@ -119,10 +119,10 @@ export default function LabReport({ markdown, loading }) {
       {/* Report document card */}
       <div
         ref={reportRef}
-        className="bg-white border border-slate-200 rounded-xl shadow-sm"
+        className="bg-black/20 border border-white/10 rounded-xl shadow-sm overflow-hidden"
       >
         {/* Document header bar */}
-        <div className="flex items-center gap-2 px-6 py-3 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+        <div className="flex items-center gap-2 px-6 py-3 border-b border-white/10 bg-black/40">
           <div className="flex gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />

@@ -42,20 +42,19 @@ You are analyzing a top-down photograph of a physical breadboard circuit.
 {lab_context_section}
 
 ## Your Task
-1. **Identify all visible components** — ICs, resistors, capacitors, LEDs, \
-buzzers, jumper wires, power rails, etc.
-2. **Trace the wiring** — determine which breadboard rows/columns are \
-electrically connected via jumper wires.
-3. **Identify the circuit type** (e.g., 555 timer astable, voltage divider, \
-common-emitter amplifier).
-4. **Find wiring errors**:
-   - Missing connections
-   - Wrong pin assignments
-   - Backward/reversed components (polarity errors)
-   - Short circuits (two rails bridged that shouldn't be)
-   - Floating pins that should be connected
-5. **Flag safety hazards** — reversed electrolytic capacitors, power rail \
-shorts, over-voltage conditions.
+1. **Identify components (STRICT CONSTRAINT)**: You MUST ONLY identify and list the components that are explicitly provided in the **Object Detection** JSON data. DO NOT hallucinate, guess, or invent components (e.g., transistors, 555 timers, or capacitors) that are not in the detection list. The detection list is the absolute GROUND TRUTH. Only jumper wires/power rails can be inferred visually if they aren't in the detection list.
+2. **Trace the wiring** — determine which breadboard rows/columns are electrically connected via jumper wires and the detected components.
+3. **Identify the circuit type** — describe what this specific combination of DETECTED components is likely trying to achieve (e.g., simple LED circuit, buzzer circuit).
+4. **Find wiring errors (BE HIGHLY CRITICAL AND AGGRESSIVE)**:
+   - Floating components: If a component leg (e.g., a resistor or LED) is inserted into a row, but NO other wire or component connects to that SAME row, the circuit is OPEN and will not work! This is a CRITICAL ERROR.
+   - Missing connections to Power/Ground rails.
+   - Missing Current-Limiting Resistors: If an LED (especially the top LED) is connected directly to a power rail without a resistor in series, it will burn out! This is a CRITICAL ERROR.
+   - Wrong pin assignments (e.g., connecting to the wrong side of the trench).
+   - Backward/reversed components (polarity errors for LEDs or capacitors).
+   - Short circuits (two rails bridged that shouldn't be).
+   - NEVER assume a circuit is correct if you see a floating pin or incomplete loop.
+5. **Flag safety hazards** — reversed electrolytic capacitors, power rail shorts, over-voltage conditions.
+6. **Wokwi Parts Layout**: Generate a `parts` array compatible with Wokwi Elements JSON to visually recreate the layout. Map the detected components to Wokwi types (e.g., `wokwi-breadboard-half`, `board-esp32-devkit-c-v4`, `wokwi-led`, `wokwi-resistor`, `wokwi-buzzer`). Estimate their `top`, `left`, and `rotate` (in degrees) coordinates so they are arranged visually (e.g. breadboard at top:0, left:0). Assign appropriate `attrs` like `{{"color": "red"}}` for LEDs or `{{"value": "220"}}` for resistors.
 
 ## Response Format
 Respond ONLY with a valid JSON object (no markdown fencing, no extra text):
@@ -67,6 +66,24 @@ Respond ONLY with a valid JSON object (no markdown fencing, no extra text):
       "type": "NE555P",
       "location": "rows 20-26, columns E-F",
       "orientation": "correct | reversed | unknown"
+    }}
+  ],
+  "parts": [
+    {{
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": 16.2,
+      "left": -54.8,
+      "rotate": 0,
+      "attrs": {{}}
+    }},
+    {{
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 164.8,
+      "left": 157.8,
+      "rotate": 180,
+      "attrs": {{ "color": "red" }}
     }}
   ],
   "connections": [
